@@ -82,6 +82,12 @@ fleet_script_rootless_tasks : &fleet_script_rootless_tasks
         - git clone https://github.com/rootless-containers/rootlesskit.git
         - cd rootlesskit && ls -lai
         # - make
+
+fleet_script_rootless_docker_tasks : &fleet_script_rootless_docker_tasks
+      script:
+        - curl -sSL https://get.docker.com/rootless | sh
+        # - make
+
 fleet_script_fakeroot_tasks : &fleet_script_fakeroot_tasks
       script:
         - sudo apt-get install -qqy fakeroot
@@ -97,8 +103,29 @@ matrix:
   fast_finish: true
   include:
 
+
     # https://github.com/rootless-containers/rootlesskit#setup
-    - name: "rootless  Python 3.7 on bionic amd64" #OK
+    - name: "rootless  docker Python 3.7 on bionic amd64"
+      dist: bionic
+      addons:
+           snaps:
+             - name: minikube
+               confinement: strict
+               channel: stable
+      language: python
+      python: 3.7
+      before_install:
+        - pip3 install virtualenv
+        - virtualenv -p $(which python3) ~venvpy3
+        - source ~venvpy3/bin/activate
+      <<: *fleet_install_tasks
+      <<: *fleet_script_tasks
+      <<: *fleet_script_rootless_docker_tasks
+      after_success:
+        - deactivate
+
+    # https://github.com/rootless-containers/rootlesskit#setup
+    - name: "rootless  Python 3.7 on bionic amd64"
       dist: bionic
       addons:
            snaps:
