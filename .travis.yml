@@ -95,25 +95,40 @@ fleet_script_rootless_docker_tasks : &fleet_script_rootless_docker_tasks
         - |
           grep ^$(whoami): /etc/subgid
         - curl -sSL https://get.docker.com/rootless | sh #Make sure to run the script as a non-root user.
-        - echo $DOCKER_HOST
-        - echo $XDG_RUNTIME_DIR
-        - echo $XDG_RUNTIME_DIR/docker.sock
         - export DOCKER_HOST=unix://$XDG_RUNTIME_DIR/docker.sock
-        # - export DOCKER_HOST=unix:///run/user/2000/docker.sock
         - echo $DOCKER_HOST
-        - echo $XDG_RUNTIME_DIR
         - echo $XDG_RUNTIME_DIR/docker.sock
         - systemctl --user start docker
         #launch the daemon on system startup, enable the systemd service and lingering
         - systemctl --user enable docker
         - sudo loginctl enable-linger $(whoami)
+        - docker info
         - docker run -d nginx
         - docker image ls && docker container ls
-        #Rootless Docker in Docker
-        #docker:<version>-dind-rootless image runs as a non-root user (UID 1000).
-        #However, --privileged is required for disabling seccomp, AppArmor, and mount masks
-        # - docker run -d --name dind-rootless --privileged docker:19.03-dind-rootless --experimental
 
+fleet_script_rootless_docker_wo_sytemd_tasks : &fleet_script_rootless_docker_wo_sytemd_tasks
+      script:
+        - sudo apt-get install -qqy uidmap #newuidmap and newgidmap need to be installed on the host. These commands are provided by the uidmap package on most distros.
+        #/etc/subuid and /etc/subgid should contain at least 65,536 subordinate UIDs/GIDs for the user
+        - id -u
+        - whoami
+        - |
+          grep ^$(whoami): /etc/subuid
+        - |
+          grep ^$(whoami): /etc/subgid
+        - curl -sSL https://get.docker.com/rootless | sh #Make sure to run the script as a non-root user.
+        - export DOCKER_HOST=unix://$XDG_RUNTIME_DIR/docker.sock
+        - echo $DOCKER_HOST
+        - echo $XDG_RUNTIME_DIR/docker.sock
+        #run the daemon directly without systemd,  run dockerd-rootless.sh instead of dockerd
+        #need --storage-driver vfs unless using Ubuntu or Debian 10 kernel
+        # - dockerd-rootless.sh --experimental --storage-driver vfs
+        - dockerd-rootless.sh --experimental
+        #enter the namespaces by running
+        - nsenter -U --preserve-credentials -n -m -t $(cat $XDG_RUNTIME_DIR/docker.pid)
+        - docker info
+        - docker run -d nginx
+        - docker image ls && docker container ls
 
 #https://docs.docker.com/engine/security/rootless/
 fleet_script_rootless_docker_dind_tasks : &fleet_script_rootless_docker_dind_tasks
@@ -177,7 +192,7 @@ matrix:
 
 
     # https://github.com/rootless-containers/rootlesskit#setup
-    - name: "rootless  docker Python 3.7 on bionic amd64"
+    - name: "rootless docker w systemd Python 3.7 on bionic amd64"
       dist: bionic
       env:
         - FORCE_ROOTLESS_INSTALL=1
@@ -197,6 +212,29 @@ matrix:
       <<: *fleet_script_rootless_docker_tasks
       after_success:
         - deactivate
+
+    # https://github.com/rootless-containers/rootlesskit#setup
+    - name: "rootless docker wo systemd Python 3.7 on bionic amd64"
+      dist: bionic
+      env:
+        - FORCE_ROOTLESS_INSTALL=1
+      addons:
+           snaps:
+             - name: minikube
+               confinement: strict
+               channel: stable
+      language: python
+      python: 3.7
+      before_install:
+        - pip3 install virtualenv
+        - virtualenv -p $(which python3) ~venvpy3
+        - source ~venvpy3/bin/activate
+      <<: *fleet_install_tasks
+      <<: *fleet_script_tasks
+      <<: *fleet_script_rootless_docker_wo_sytemd_tasks
+      after_success:
+        - deactivate
+
 #
 #     # https://github.com/rootless-containers/rootlesskit#setup
 #     - name: "rootlesskit  Python 3.7 on bionic amd64"
