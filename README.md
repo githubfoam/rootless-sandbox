@@ -4,7 +4,9 @@ rootless docker image build kubernetes cluster
 Travis (.com)  branch:
 [![Build Status](https://travis-ci.com/githubfoam/rootless-sandbox.svg?branch=dev)](https://travis-ci.com/githubfoam/rootless-sandbox)  
 
+rootless docker w systemd
 ~~~~
+
 docker info shows rootless in SecurityOptions
 docker info shows none as Cgroup Driver
 
@@ -104,6 +106,26 @@ Server:
 
  Product License: Community Engine
 ~~~~
+rootless docker wo systemd
+~~~~
+
++exec dockerd --experimental
+
+INFO[2020-06-13T20:08:51.644166459Z] Starting up                                  
+
+WARN[2020-06-13T20:08:51.644200109Z] Running experimental build                   
+
+WARN[2020-06-13T20:08:51.644207068Z] Running in rootless mode. Cgroups, AppArmor, and CRIU are disabled.
+
+INFO[2020-06-13T20:08:51.644218306Z] Running with RootlessKit integration         
+
+failed to start daemon: pid file found, ensure docker is not running or delete /run/user/2000/docker.pid
+
+[rootlesskit:child ] error: command [/home/travis/bin/dockerd-rootless.sh --experimental] exited: exit status 1
+
+[rootlesskit:parent] error: child exited: exit status 1
+~~~~
+
 
 ~~~~
 Run the Docker daemon as a non-root user (Rootless mode)
