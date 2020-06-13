@@ -197,7 +197,7 @@ fleet_frakti_tasks : &fleet_frakti_tasks
         #Build frakti
         - git clone https://github.com/kubernetes/frakti.git $GOPATH/src/k8s.io/frakti
         - cd $GOPATH/src/k8s.io/frakti
-        - make && make install
+        - sudo make && sudo make install
         #Install docker and hyperd
         - sudo apt-get install qemu libvirt0 docker.io -qqy
         - sudo sh -c "curl -sSL https://hypercontainer.io/install | bash"
@@ -275,7 +275,8 @@ fleet_containerd_tasks : &fleet_containerd_tasks
         - sudo apt-get install -qqy unzip
         - wget https://github.com/containerd/containerd/archive/v$CONTAINERDVERSION.zip
         - unzip v1.3.4.zip
-        - ls -lai
+        - ls -lai containerd-$CONTAINERDVERSION
+        - echo $(/etc/containerd/config.toml)
         # - |
         #   sudo sh -c 'cat >/etc/containerd/config.toml <<-EOF
         #     subreaper = true
@@ -295,7 +296,8 @@ fleet_containerd_tasks : &fleet_containerd_tasks
 fleet_crio_tasks : &fleet_crio_tasks
       install:
         - CRIO_VERSION=1.17
-        - sudo sh -c ". /etc/os-release"
+        # - sudo sh -c ". /etc/os-release"
+        - . /etc/os-release
         - sudo sh -c "echo 'deb http://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/x${NAME}_${VERSION_ID}/ /' >/etc/apt/sources.list.d/devel:kubic:libcontainers:stable.list"
         - wget -nv https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable/x${NAME}_${VERSION_ID}/Release.key -O- | sudo apt-key add -
         - sudo apt-get update -qq
