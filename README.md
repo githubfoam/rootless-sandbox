@@ -4,8 +4,24 @@ rootless docker image build kubernetes cluster
 Travis (.com)  branch:
 [![Build Status](https://travis-ci.com/githubfoam/rootless-sandbox.svg?branch=dev)](https://travis-ci.com/githubfoam/rootless-sandbox)  
 
-rootless docker w systemd
+Rootless Docker in Docker w systemd
 ~~~~
+$ docker image ls && docker container ls
+
+REPOSITORY          TAG                   IMAGE ID            CREATED             SIZE
+
+nginx               latest                2622e6cca7eb        4 days ago          132MB
+
+docker              19.03-dind-rootless   48dc2ea478ca        10 days ago         290MB
+
+CONTAINER ID        IMAGE                        COMMAND                  CREATED             STATUS                  PORTS               NAMES
+
+6baa2bc0fad8        docker:19.03-dind-rootless   "dockerd-entrypoint.…"   1 second ago        Up Less than a second   2375-2376/tcp       dind-rootless
+
+51ae3cdbbcc7        nginx                        "/docker-entrypoint.…"   13 seconds ago      Up 13 seconds           80/tcp              vibrant_shtern
+~~~~
+~~~~
+rootless docker w systemd
 
 docker info shows rootless in SecurityOptions
 docker info shows none as Cgroup Driver
