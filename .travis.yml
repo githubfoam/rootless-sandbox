@@ -108,6 +108,9 @@ fleet_script_rootless_docker_tasks : &fleet_script_rootless_docker_tasks
 
 fleet_script_rootless_docker_wo_sytemd_tasks : &fleet_script_rootless_docker_wo_sytemd_tasks
       script:
+        - docker version
+        - sudo systemctl status docker
+        - sudo systemctl stop docker
         - sudo apt-get install -qqy uidmap #newuidmap and newgidmap need to be installed on the host. These commands are provided by the uidmap package on most distros.
         #/etc/subuid and /etc/subgid should contain at least 65,536 subordinate UIDs/GIDs for the user
         - id -u
@@ -192,26 +195,26 @@ matrix:
 
 
     # https://github.com/rootless-containers/rootlesskit#setup
-    - name: "rootless docker w systemd Python 3.7 on bionic amd64"
-      dist: bionic
-      env:
-        - FORCE_ROOTLESS_INSTALL=1
-      addons:
-           snaps:
-             - name: minikube
-               confinement: strict
-               channel: stable
-      language: python
-      python: 3.7
-      before_install:
-        - pip3 install virtualenv
-        - virtualenv -p $(which python3) ~venvpy3
-        - source ~venvpy3/bin/activate
-      <<: *fleet_install_tasks
-      <<: *fleet_script_tasks
-      <<: *fleet_script_rootless_docker_tasks
-      after_success:
-        - deactivate
+    # - name: "rootless docker w systemd Python 3.7 on bionic amd64"
+    #   dist: bionic
+    #   env:
+    #     - FORCE_ROOTLESS_INSTALL=1
+    #   addons:
+    #        snaps:
+    #          - name: minikube
+    #            confinement: strict
+    #            channel: stable
+    #   language: python
+    #   python: 3.7
+    #   before_install:
+    #     - pip3 install virtualenv
+    #     - virtualenv -p $(which python3) ~venvpy3
+    #     - source ~venvpy3/bin/activate
+    #   <<: *fleet_install_tasks
+    #   <<: *fleet_script_tasks
+    #   <<: *fleet_script_rootless_docker_tasks
+    #   after_success:
+    #     - deactivate
 
     # https://github.com/rootless-containers/rootlesskit#setup
     - name: "rootless docker wo systemd Python 3.7 on bionic amd64"
