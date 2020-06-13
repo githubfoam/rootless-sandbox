@@ -192,33 +192,132 @@ fleet_install_tasks : &fleet_install_tasks
       install:
         - pip install -r requirements.txt
 
+fleet_frakti_tasks : &fleet_frakti_tasks
+      install:
+        - echo $GOPATH
+        # #Build frakti
+        # - git clone https://github.com/kubernetes/frakti.git $GOPATH/src/k8s.io/frakti
+        # - cd $GOPATH/src/k8s.io/frakti
+        # - make && make install
+        # #Install docker and hyperd
+        # - sudo apt-get install qemu libvirt0 docker.io -qqy
+        # - sudo sh -c "curl -sSL https://hypercontainer.io/install | bash"
+        # #Configure hyperd with gRPC endpoint 127.0.0.1:22318
+        # - |
+        #   cat >/etc/hyper/config <<EOF
+        #   # Boot kernel
+        #   Kernel=/var/lib/hyper/kernel
+        #   # Boot initrd
+        #   Initrd=/var/lib/hyper/hyper-initrd.img
+        #   # Storage driver for hyperd, valid value includes devicemapper, overlay, and aufs
+        #   StorageDriver=overlay
+        #   # Hypervisor to run containers and pods, valid values are: libvirt, qemu, kvm, xen
+        #   Hypervisor=qemu
+        #   # The tcp endpoint of gRPC API
+        #   gRPCHost=127.0.0.1:22318
+        #   EOF
+        # - sudo systemctl restart hyperd
+        # #Setup CNI networking using bridge plugin
+        # - sudo mkdir -p /etc/cni/net.d  /opt/cni/bin
+        # - git clone https://github.com/containernetworking/plugins $GOPATH/src/github.com/containernetworking/plugins
+        # - cd $GOPATH/src/github.com/containernetworking/plugins
+        # - source ./build.sh
+        # - sudo cp bin/* /opt/cni/bin/
+        # - |
+        #   sudo sh -c 'cat >/etc/cni/net.d/10-mynet.conflist <<-EOF
+        #   {
+        #       "cniVersion": "0.3.1",
+        #       "name": "mynet",
+        #       "plugins": [
+        #           {
+        #               "type": "bridge",
+        #               "bridge": "cni0",
+        #               "isGateway": true,
+        #               "ipMasq": true,
+        #               "ipam": {
+        #                   "type": "host-local",
+        #                   "subnet": "10.30.0.0/16",
+        #                   "routes": [
+        #                       { "dst": "0.0.0.0/0"   }
+        #                   ]
+        #               }
+        #           },
+        #           {
+        #               "type": "portmap",
+        #               "capabilities": {"portMappings": true},
+        #               "snat": true
+        #           }
+        #       ]
+        #   }
+        #   EOF'
+        # - |
+        #   sudo sh -c 'cat >/etc/cni/net.d/99-loopback.conf <<-EOF
+        #   {
+        #       "cniVersion": "0.3.1",
+        #       "type": "loopback"
+        #   }
+        #   EOF'
+        # - frakti --v=3 --logtostderr --listen=/var/run/frakti.sock --hyper-endpoint=127.0.0.1:22318 &  #start frakti
+        # #start kubernetes with frakti runtime
+        # - cd $GOPATH/src/k8s.io/kubernetes
+        # - hack/install-etcd.sh
+        # - export PATH=$GOPATH/src/k8s.io/kubernetes/third_party/etcd:${PATH}
+        # - export KUBERNETES_PROVIDER=local
+        # - export CONTAINER_RUNTIME=remote
+        # - export CONTAINER_RUNTIME_ENDPOINT=/var/run/frakti.sock
+        # - source hack/local-up-cluster.sh &
+        #start using the cluster, open up another terminal and run
+        # - cd $GOPATH/src/k8s.io/kubernetes
+        # - export KUBECONFIG=/var/run/kubernetes/admin.kubeconfig
+        # - cluster/kubectl.sh
 
 matrix:
   fast_finish: true
   include:
 
+    #https://github.com/kubernetes/frakti
+    - name: "kubernetes with frakti runtime Python 3.7 on bionic amd64"
+      dist: bionic
+      env:
+        - FORCE_ROOTLESS_INSTALL=1
+      addons:
+           snaps:
+             - name: minikube
+               confinement: strict
+               channel: stable
+      language: python
+      python: 3.7
+      before_install:
+        - pip3 install virtualenv
+        - virtualenv -p $(which python3) ~venvpy3
+        - source ~venvpy3/bin/activate
+      <<: *fleet_install_tasks
+      <<: *fleet_script_tasks
+      <<: *fleet_frakti_tasks
+      after_success:
+        - deactivate
 
     # https://github.com/rootless-containers/rootlesskit#setup
-    # - name: "rootless docker w systemd Python 3.7 on bionic amd64"
-    #   dist: bionic
-    #   env:
-    #     - FORCE_ROOTLESS_INSTALL=1
-    #   addons:
-    #        snaps:
-    #          - name: minikube
-    #            confinement: strict
-    #            channel: stable
-    #   language: python
-    #   python: 3.7
-    #   before_install:
-    #     - pip3 install virtualenv
-    #     - virtualenv -p $(which python3) ~venvpy3
-    #     - source ~venvpy3/bin/activate
-    #   <<: *fleet_install_tasks
-    #   <<: *fleet_script_tasks
-    #   <<: *fleet_script_rootless_docker_tasks
-    #   after_success:
-    #     - deactivate
+    - name: "rootless docker w systemd Python 3.7 on bionic amd64"
+      dist: bionic
+      env:
+        - FORCE_ROOTLESS_INSTALL=1
+      addons:
+           snaps:
+             - name: minikube
+               confinement: strict
+               channel: stable
+      language: python
+      python: 3.7
+      before_install:
+        - pip3 install virtualenv
+        - virtualenv -p $(which python3) ~venvpy3
+        - source ~venvpy3/bin/activate
+      <<: *fleet_install_tasks
+      <<: *fleet_script_tasks
+      <<: *fleet_script_rootless_docker_tasks
+      after_success:
+        - deactivate
 
     # https://github.com/rootless-containers/rootlesskit#setup
     - name: "Rootless Docker in Docker w systemd Python 3.7 on bionic amd64"
@@ -264,140 +363,168 @@ matrix:
     #   after_success:
     #     - deactivate
 
+
+    # https://github.com/rootless-containers/rootlesskit#setup
+    - name: "rootlesskit  Python 3.7 on bionic amd64"
+      dist: bionic
+      addons:
+           snaps:
+             - name: minikube
+               confinement: strict
+               channel: stable
+      language: python
+      python: 3.7
+      before_install:
+        - pip3 install virtualenv
+        - virtualenv -p $(which python3) ~venvpy3
+        - source ~venvpy3/bin/activate
+      <<: *fleet_install_tasks
+      <<: *fleet_script_tasks
+      <<: *fleet_script_rootless_tasks
+      after_success:
+        - deactivate
+
+    # https://wiki.debian.org/FakeRoot
+    # https://sylabs.io/guides/3.4/user-guide/fakeroot.html
+    - name: "fakeroot  Python 3.7 on bionic amd64" #OK
+      dist: bionic
+      addons:
+           snaps:
+             - name: minikube
+               confinement: strict
+               channel: stable
+      language: python
+      python: 3.7
+      before_install:
+        - pip3 install virtualenv
+        - virtualenv -p $(which python3) ~venvpy3
+        - source ~venvpy3/bin/activate
+      <<: *fleet_install_tasks
+      <<: *fleet_script_tasks
+      <<: *fleet_script_fakeroot_tasks
+      after_success:
+        - deactivate
+
+    # https://github.com/rootless-containers/usernetes#quick-start
+    - name: "usernetes container runtimes(-cri=containerd) Python 3.7 on bionic amd64" #OK
+      dist: bionic
+      addons:
+           snaps:
+             - name: kubectl
+               confinement: classic
+               channel: latest/stable
+      language: python
+      python: 3.7
+      before_install:
+        - pip3 install virtualenv
+        - virtualenv -p $(which python3) ~venvpy3
+        - source ~venvpy3/bin/activate
+      <<: *fleet_install_tasks
+      <<: *fleet_script_tasks
+      <<: *fleet_script_usernetes_containerd_tasks
+      after_success:
+        - deactivate
+
+    # https://github.com/rootless-containers/usernetes#quick-start
+    - name: "usernetes container runtimes(cri=crio) Python 3.7 on bionic amd64" #OK
+      dist: bionic
+      addons:
+           snaps:
+             - name: kubectl
+               confinement: classic
+               channel: latest/stable
+      language: python
+      python: 3.7
+      before_install:
+        - pip3 install virtualenv
+        - virtualenv -p $(which python3) ~venvpy3
+        - source ~venvpy3/bin/activate
+      <<: *fleet_install_tasks
+      <<: *fleet_script_tasks
+      <<: *fleet_script_usernetes_crio_tasks
+      after_success:
+        - deactivate
+
+    # https://github.com/rootless-containers/usernetes#quick-start
+    - name: "Run Usernetes in Docker - single node Python 3.7 on bionic amd64" #OK
+      dist: bionic
+      addons:
+           snaps:
+             - name: minikube
+               confinement: strict
+               channel: stable
+      language: python
+      python: 3.7
+      before_install:
+        - pip3 install virtualenv
+        - virtualenv -p $(which python3) ~venvpy3
+        - source ~venvpy3/bin/activate
+      <<: *fleet_install_tasks
+      <<: *fleet_script_tasks
+      <<: *fleet_script_usernetesindocker_tasks
+      after_success:
+        - deactivate
+
+    # https://github.com/rootless-containers/usernetes#quick-start
+    - name: "Run Usernetes in Docker - Multi node (Docker Compose) Python 3.7 on bionic amd64" #OK
+      dist: bionic
+      addons:
+           snaps:
+             - name: kubectl
+               confinement: classic
+               channel: stable
+      language: python
+      python: 3.7
+      before_install:
+        - pip3 install virtualenv
+        - virtualenv -p $(which python3) ~venvpy3
+        - source ~venvpy3/bin/activate
+      <<: *fleet_install_tasks
+      <<: *fleet_script_tasks
+      <<: *fleet_script_usernetesindocker_dockercompose_tasks
+      after_success:
+        - deactivate
+
+#   # =============================================macOS=============================================
+    # https://github.com/moby/buildkit
+    - name: "buildkit Python 2.7.17 on macOS 10.15.4 osx xcode11.5"
+      os: osx
+      osx_image: xcode11.5
+      language: shell
+      addons:
+        homebrew:
+          packages:
+            - buildkit
+          # casks: # Installing Casks
+          #   - podman
+          update: true
+      before_install:
+        - pip install virtualenv
+        - virtualenv -p $(which python2) ~venvpy2
+        - source ~venvpy2/bin/activate
+      <<: *fleet_install_tasks
+      <<: *fleet_script_tasks
+      script:
+        - brew info buildkit
+        # - brew doctor #Check system for potential problems
+        - brew update #Update brew and cask
+        - brew cask upgrade
+      after_success:
+        - brew uninstall kubectl buildkit
+        - brew cleanup buildkit
+        - deactivate
 #
-#     # https://github.com/rootless-containers/rootlesskit#setup
-#     - name: "rootlesskit  Python 3.7 on bionic amd64"
-#       dist: bionic
-#       addons:
-#            snaps:
-#              - name: minikube
-#                confinement: strict
-#                channel: stable
-#       language: python
-#       python: 3.7
-#       before_install:
-#         - pip3 install virtualenv
-#         - virtualenv -p $(which python3) ~venvpy3
-#         - source ~venvpy3/bin/activate
-#       <<: *fleet_install_tasks
-#       <<: *fleet_script_tasks
-#       <<: *fleet_script_rootless_tasks
-#       after_success:
-#         - deactivate
-#
-#     # https://wiki.debian.org/FakeRoot
-#     # https://sylabs.io/guides/3.4/user-guide/fakeroot.html
-#     - name: "fakeroot  Python 3.7 on bionic amd64" #OK
-#       dist: bionic
-#       addons:
-#            snaps:
-#              - name: minikube
-#                confinement: strict
-#                channel: stable
-#       language: python
-#       python: 3.7
-#       before_install:
-#         - pip3 install virtualenv
-#         - virtualenv -p $(which python3) ~venvpy3
-#         - source ~venvpy3/bin/activate
-#       <<: *fleet_install_tasks
-#       <<: *fleet_script_tasks
-#       <<: *fleet_script_fakeroot_tasks
-#       after_success:
-#         - deactivate
-#
-#     # https://github.com/rootless-containers/usernetes#quick-start
-#     - name: "usernetes container runtimes(-cri=containerd) Python 3.7 on bionic amd64" #OK
-#       dist: bionic
-#       addons:
-#            snaps:
-#              - name: kubectl
-#                confinement: classic
-#                channel: latest/stable
-#       language: python
-#       python: 3.7
-#       before_install:
-#         - pip3 install virtualenv
-#         - virtualenv -p $(which python3) ~venvpy3
-#         - source ~venvpy3/bin/activate
-#       <<: *fleet_install_tasks
-#       <<: *fleet_script_tasks
-#       <<: *fleet_script_usernetes_containerd_tasks
-#       after_success:
-#         - deactivate
-#
-#     # https://github.com/rootless-containers/usernetes#quick-start
-#     - name: "usernetes container runtimes(cri=crio) Python 3.7 on bionic amd64" #OK
-#       dist: bionic
-#       addons:
-#            snaps:
-#              - name: kubectl
-#                confinement: classic
-#                channel: latest/stable
-#       language: python
-#       python: 3.7
-#       before_install:
-#         - pip3 install virtualenv
-#         - virtualenv -p $(which python3) ~venvpy3
-#         - source ~venvpy3/bin/activate
-#       <<: *fleet_install_tasks
-#       <<: *fleet_script_tasks
-#       <<: *fleet_script_usernetes_crio_tasks
-#       after_success:
-#         - deactivate
-#
-#     # https://github.com/rootless-containers/usernetes#quick-start
-#     - name: "Run Usernetes in Docker - single node Python 3.7 on bionic amd64" #OK
-#       dist: bionic
-#       addons:
-#            snaps:
-#              - name: minikube
-#                confinement: strict
-#                channel: stable
-#       language: python
-#       python: 3.7
-#       before_install:
-#         - pip3 install virtualenv
-#         - virtualenv -p $(which python3) ~venvpy3
-#         - source ~venvpy3/bin/activate
-#       <<: *fleet_install_tasks
-#       <<: *fleet_script_tasks
-#       <<: *fleet_script_usernetesindocker_tasks
-#       after_success:
-#         - deactivate
-#
-#     # https://github.com/rootless-containers/usernetes#quick-start
-#     - name: "Run Usernetes in Docker - Multi node (Docker Compose) Python 3.7 on bionic amd64" #OK
-#       dist: bionic
-#       addons:
-#            snaps:
-#              - name: kubectl
-#                confinement: classic
-#                channel: stable
-#       language: python
-#       python: 3.7
-#       before_install:
-#         - pip3 install virtualenv
-#         - virtualenv -p $(which python3) ~venvpy3
-#         - source ~venvpy3/bin/activate
-#       <<: *fleet_install_tasks
-#       <<: *fleet_script_tasks
-#       <<: *fleet_script_usernetesindocker_dockercompose_tasks
-#       after_success:
-#         - deactivate
-#
-# #   # =============================================macOS=============================================
-#     # https://github.com/moby/buildkit
-#     - name: "buildkit Python 2.7.17 on macOS 10.15.4 osx xcode11.5"
+#     - name: "podman(no support) CRI-O container runtime minikube kubectl Python 2.7.17 on macOS 10.15.4 osx xcode11.5"
 #       os: osx
 #       osx_image: xcode11.5
 #       language: shell
 #       addons:
 #         homebrew:
 #           packages:
-#             - buildkit
-#           # casks: # Installing Casks
-#           #   - podman
+#             - kubectl
+#             - minikube
+#           casks: # Installing Casks
+#             - podman
 #           update: true
 #       before_install:
 #         - pip install virtualenv
@@ -406,89 +533,61 @@ matrix:
 #       <<: *fleet_install_tasks
 #       <<: *fleet_script_tasks
 #       script:
-#         - brew info buildkit
+#         - kubectl version --client
+#         - brew cat kubectl
+#         - brew cat minikube
+#         - brew home kubectl
+#         - brew home minikube
+#         - brew info kubectl
+#         - brew info minikube
 #         # - brew doctor #Check system for potential problems
 #         - brew update #Update brew and cask
 #         - brew cask upgrade
+#         - brew cask info podman
+#         # - podman info #No output has been received in the last 10m0s, this potentially indicates a stalled build or something wrong with the build itself
+#         # - "podman build ."
+#         # - podman images #lists all the images
+#         # - podman run  -p 80:80 -dit centos
+#         # - podman ps -a
+#         # - minikube config set driver podman #make docker the default driver
+#         # - minikube start --driver=podman --container-runtime=cri-o #Start a cluster using the podman driver
 #       after_success:
-#         - brew uninstall kubectl buildkit
-#         - brew cleanup buildkit
+#         - brew uninstall kubectl minikube
+#         - brew cleanup kubectl minikube
+#         - brew cask uninstall --force podman
 #         - deactivate
-# #
-# #     - name: "podman(no support) CRI-O container runtime minikube kubectl Python 2.7.17 on macOS 10.15.4 osx xcode11.5"
-# #       os: osx
-# #       osx_image: xcode11.5
-# #       language: shell
-# #       addons:
-# #         homebrew:
-# #           packages:
-# #             - kubectl
-# #             - minikube
-# #           casks: # Installing Casks
-# #             - podman
-# #           update: true
-# #       before_install:
-# #         - pip install virtualenv
-# #         - virtualenv -p $(which python2) ~venvpy2
-# #         - source ~venvpy2/bin/activate
-# #       <<: *fleet_install_tasks
-# #       <<: *fleet_script_tasks
-# #       script:
-# #         - kubectl version --client
-# #         - brew cat kubectl
-# #         - brew cat minikube
-# #         - brew home kubectl
-# #         - brew home minikube
-# #         - brew info kubectl
-# #         - brew info minikube
-# #         # - brew doctor #Check system for potential problems
-# #         - brew update #Update brew and cask
-# #         - brew cask upgrade
-# #         - brew cask info podman
-# #         # - podman info #No output has been received in the last 10m0s, this potentially indicates a stalled build or something wrong with the build itself
-# #         # - "podman build ."
-# #         # - podman images #lists all the images
-# #         # - podman run  -p 80:80 -dit centos
-# #         # - podman ps -a
-# #         # - minikube config set driver podman #make docker the default driver
-# #         # - minikube start --driver=podman --container-runtime=cri-o #Start a cluster using the podman driver
-# #       after_success:
-# #         - brew uninstall kubectl minikube
-# #         - brew cleanup kubectl minikube
-# #         - brew cask uninstall --force podman
-# #         - deactivate
-# #
-# #  # =============================================windows=============================================
-# #
-# #     - name: "podman(no support) kubectl minikube Python 3.8 on Windows"
-# #       os: windows
-# #       language: shell
-# #       env:
-# #         - PATH=/c/Python38:/c/Python38/Scripts:$PATH
-# #       before_install:
-# #         - choco install python --version 3.8.1
-# #         - pip install virtualenv
-# #         - virtualenv $HOME/venv
-# #         - source $HOME/venv/Scripts/activate
-# #       <<: *fleet_install_tasks
-# #       <<: *fleet_script_tasks
-# #       script:
-# #         - choco install kubernetes-cli
-# #         - choco install minikube
-# #         # - minikube start --driver=none # The driver 'none' is not supported on windows
-# #         # - minikube status
-# #         - kubectl version --client
-# #         # - set USERPROFILE #query the value of %USERPROFILE%
-# #         # - set #see all currently defined environment variables    #USERPROFILE='C:\Users\travis'
-# #         - echo cd %USERPROFILE% #when debugging a command
-# #         - echo %cd% #print current path
-# #         - echo mkdir %USERPROFILE%\.kube
-# #         - mkdir %USERPROFILE%\.kube
-# #         - echo cd %USERPROFILE%\.kube
-# #         - cd %USERPROFILE%\.kube
-# #         # - mkdir .kube
-# #         # - cd .kube
-# #         - cd #print current path
-# #         # - New-Item config -type file #Configure kubectl to use a remote Kubernetes cluster:
-# #       after_success:
-# #         - deactivate
+#
+#  # =============================================windows=============================================
+#
+#     - name: "podman(no support) kubectl minikube Python 3.8 on Windows"
+#       os: windows
+#       language: shell
+#       env:
+#         - PATH=/c/Python38:/c/Python38/Scripts:$PATH
+#       before_install:
+#         - choco install python --version 3.8.1
+#         - pip install virtualenv
+#         - virtualenv $HOME/venv
+#         - source $HOME/venv/Scripts/activate
+#       <<: *fleet_install_tasks
+#       <<: *fleet_script_tasks
+#       script:
+#         - choco install kubernetes-cli
+#         - choco install minikube
+#         # - minikube start --driver=none # The driver 'none' is not supported on windows
+#         # - minikube status
+#         - kubectl version --client
+#         # - set USERPROFILE #query the value of %USERPROFILE%
+#         # - set #see all currently defined environment variables    #USERPROFILE='C:\Users\travis'
+#         - echo cd %USERPROFILE% #when debugging a command
+#         - echo %cd% #print current path
+#         - echo mkdir %USERPROFILE%\.kube
+#         - mkdir %USERPROFILE%\.kube
+#         - echo cd %USERPROFILE%\.kube
+#         - cd %USERPROFILE%\.kube
+#         # - mkdir .kube
+#         # - cd .kube
+#         - cd #print current path
+#         # - New-Item config -type file #Configure kubectl to use a remote Kubernetes cluster:
+#       after_success:
+#         - deactivate
