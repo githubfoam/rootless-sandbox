@@ -4,7 +4,11 @@ rootless docker image build kubernetes cluster
 Travis (.com)  branch:
 [![Build Status](https://travis-ci.com/githubfoam/rootless-sandbox.svg?branch=dev)](https://travis-ci.com/githubfoam/rootless-sandbox)  
 
-
+~~~~
+Run the Docker daemon as a non-root user (Rootless mode)
+Rootless mode executes the Docker daemon and containers inside a user namespace. This is very similar to userns-remap mode, except that with userns-remap mode, the daemon itself is running with root privileges, whereas in rootless mode, both the daemon and the container are running without root privileges.
+https://docs.docker.com/engine/security/rootless/
+~~~~
 ~~~~
 Linux-native "fake root" for rootless containers
 https://github.com/rootless-containers/rootlesskit
