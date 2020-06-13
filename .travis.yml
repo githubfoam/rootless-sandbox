@@ -111,6 +111,7 @@ fleet_script_rootless_docker_wo_sytemd_tasks : &fleet_script_rootless_docker_wo_
         - docker version
         - sudo systemctl status docker
         - sudo systemctl stop docker
+        - sudo systemctl status docker
         - sudo apt-get install -qqy uidmap #newuidmap and newgidmap need to be installed on the host. These commands are provided by the uidmap package on most distros.
         #/etc/subuid and /etc/subgid should contain at least 65,536 subordinate UIDs/GIDs for the user
         - id -u
