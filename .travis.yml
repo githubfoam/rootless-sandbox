@@ -8,6 +8,91 @@ notifications:
   slack:
     on_failure: always
 
+#https://github.com/rootless-containers/usernetes
+fleet_script_usernetes_CRI_runtime_docker_tasks : &fleet_script_usernetes_CRI_runtime_docker_tasks
+      script:
+          #Kubernetes installable under $HOME, without the root privileges
+          #https://github.com/rootless-containers/usernetes/releases
+          - wget https://github.com/rootless-containers/usernetes/releases/download/v20200309.0/usernetes-x86_64.tbz && tar xjvf usernetes-x86_64.tbz && cd usernetes
+          - ./install.sh --cri=containerd #use containerd as the CRI runtime (default)
+          - ls -lai $HOME/.config/systemd/unit #install.sh installs Usernetes systemd units to $HOME/.config/systemd/unit
+          # - ./kubectl.sh get nodes #Use kubectl
+          - ./rootlessctl.sh add-ports 127.0.0.1:8080:8080/tcp #Use kubectl
+          - export KUBECONFIG=$(pwd)/config/localhost.kubeconfig
+          - kubectl get nodes
+          - |
+            nsenter -U -n -t $(cat $XDG_RUNTIME_DIR/usernetes/rootlesskit/child_pid) \
+            kubectl --kubeconfig=./config/localhost.kubeconfig get nodes
+          - 'docker build -t rootlesscontainers/usernetes .' #The image is based on Fedora.
+          #Single node
+          - docker run -td --name usernetes-node -p 127.0.0.1:8080:8080 --privileged rootlesscontainers/usernetes -p 0.0.0.0:8080:8080/tcp --cri=containerd
+          - export KUBECONFIG=./config/localhost.kubeconfig
+          - kubectl run -it --rm --image busybox foo #interactive mode, kubectl run runs detached by default
+          - kubectl run --rm --image busybox foo
+          - kubectl run date -i --tty --rm --restart=Never --image=busybox
+          - kubectl run date --rm --restart=Never --image=busybox -- sleep 10
+          - kubectl get nodes
+          #Multi node (Docker Compose)
+          - docker-compose up -d
+          - export KUBECONFIG=./config/localhost.kubeconfig
+          - ./cleanup.sh #
+          - ./uninstall.sh
+
+#https://github.com/rootless-containers/usernetes
+fleet_script_usernetes_CRI_runtime_dockercompose_tasks : &fleet_script_usernetes_CRI_runtime_dockercompose_tasks
+      script:
+        #Kubernetes installable under $HOME, without the root privileges
+          #https://github.com/rootless-containers/usernetes/releases
+          - wget https://github.com/rootless-containers/usernetes/releases/download/v20200309.0/usernetes-x86_64.tbz && tar xjvf usernetes-x86_64.tbz && cd usernetes
+          - ./install.sh --cri=containerd #use containerd as the CRI runtime (default)
+          - ls -lai $HOME/.config/systemd/unit #install.sh installs Usernetes systemd units to $HOME/.config/systemd/unit
+          # - ./kubectl.sh get nodes #Use kubectl
+          - ./rootlessctl.sh add-ports 127.0.0.1:8080:8080/tcp #Use kubectl
+          - export KUBECONFIG=$(pwd)/config/localhost.kubeconfig
+          - kubectl get nodes
+          - |
+            nsenter -U -n -t $(cat $XDG_RUNTIME_DIR/usernetes/rootlesskit/child_pid) \
+            kubectl --kubeconfig=./config/localhost.kubeconfig get nodes
+          - 'docker build -t rootlesscontainers/usernetes .' #The image is based on Fedora.
+          #Multi node (Docker Compose)
+          - docker-compose up -d
+          - export KUBECONFIG=./config/localhost.kubeconfig #Flannel VXLAN 10.5.0.0/16 is configured by default.
+          - echo $KUBECONFIG
+          # - kubectl get nodes -o wide
+          # - kubectl run --replicas=3 --image=nginx:alpine nginx
+          # - kubectl get pods -o wide
+          # - kubectl exec -it nginx-6b4b85b77b-7hqrk -- wget -O - http://10.5.79.3  # interactive
+          # - kubectl exec -it nginx-6b4b85b77b-7hqrk -- wget -O - http://10.5.7.3  # interactive
+          - sudo apt-get -qqy update
+          - sudo apt-get -qqy install slirp4netns
+          #Expose netns ports to the host,expose Usernetes netns ports to the host METHOD1
+          # - ./rootlessctl.sh add-ports 0.0.0.0:8080:80/tcp #Usernetes runs in a network namespace (with slirp4netns)
+          #manually expose Usernetes netns ports manually with socat METHOD2
+          - sudo apt-get -qqy install socat
+          - pid=$(cat $XDG_RUNTIME_DIR/usernetes/rootlesskit/child_pid)
+          - socat -t -- TCP-LISTEN:8080,reuseaddr,fork EXEC:"nsenter -U -n -t $pid socat -t -- STDIN TCP4\:127.0.0.1\:80"
+          - sudo sh -c "echo 0   2147483647  > /proc/sys/net/ipv4/ping_group_range" #Routing ping packets
+          - cat /proc/sys/net/ipv4/ping_group_range
+          - ./cleanup.sh #
+          - ./uninstall.sh
+
+fleet_script_usernetes_CRI_runtime_tasks : &fleet_script_usernetes_CRI_runtime_tasks
+      script:
+        #Kubernetes installable under $HOME, without the root privileges
+          #https://github.com/rootless-containers/usernetes/releases
+          - wget https://github.com/rootless-containers/usernetes/releases/download/v20200309.0/usernetes-x86_64.tbz && tar xjvf usernetes-x86_64.tbz && cd usernetes
+          - ./install.sh --cri=containerd #use containerd as the CRI runtime (default)
+          - ls -lai $HOME/.config/systemd/unit #install.sh installs Usernetes systemd units to $HOME/.config/systemd/unit
+          # - ./kubectl.sh get nodes #Use kubectl
+          - ./rootlessctl.sh add-ports 127.0.0.1:8080:8080/tcp #Use kubectl
+          - export KUBECONFIG=$(pwd)/config/localhost.kubeconfig
+          - kubectl get nodes
+          - |
+            nsenter -U -n -t $(cat $XDG_RUNTIME_DIR/usernetes/rootlesskit/child_pid) \
+            kubectl --kubeconfig=./config/localhost.kubeconfig get nodes
+          - ./cleanup.sh #
+          - ./uninstall.sh
+          
 fleet_script_usernetes_containerd_tasks : &fleet_script_usernetes_containerd_tasks
       script:
         - USERNETES_VERSION=20200611.1
