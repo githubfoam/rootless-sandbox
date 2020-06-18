@@ -13,11 +13,11 @@ adduser  $(id -un) libvirtd #ensure that your username is added to the group lib
 kvm-ok
 echo "=============================Install Vagrant============================================================="
 apt-get install -qqy unzip jq
-# wget -nv https://releases.hashicorp.com/vagrant/${VAGRANT_CURRENT_VERSION}/vagrant_${VAGRANT_CURRENT_VERSION}_x86_64.deb
-# dpkg -i vagrant_${VAGRANT_VERSION}_x86_64.deb
-wget -nv https://releases.hashicorp.com/vagrant/$VAGRANT_CURRENT_VERSION/vagrant_${VAGRANT_CURRENT_VERSION}_linux_amd64.zip
-unzip "vagrant_${VAGRANT_CURRENT_VERSION}_linux_amd64.zip"
-cp vagrant /usr/bin
+wget -nv https://releases.hashicorp.com/vagrant/${VAGRANT_CURRENT_VERSION}/vagrant_${VAGRANT_CURRENT_VERSION}_x86_64.deb
+dpkg -i vagrant_${VAGRANT_VERSION}_x86_64.deb
+# wget -nv https://releases.hashicorp.com/vagrant/$VAGRANT_CURRENT_VERSION/vagrant_${VAGRANT_CURRENT_VERSION}_linux_amd64.zip
+# unzip "vagrant_${VAGRANT_CURRENT_VERSION}_linux_amd64.zip"
+# cp vagrant /usr/bin
 vagrant version
 echo "=============================Install Vagrant============================================================="
 vagrant plugin install vagrant-libvirt #The vagrant-libvirt plugin is required when using KVM on Linux
