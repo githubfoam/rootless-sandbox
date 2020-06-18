@@ -71,7 +71,8 @@ Vagrant.configure(2) do |config|
           echo "===================================================================================="
           cp /vagrant/Makefile .
           cp -r /vagrant/scripts/ .
-          make archlinux-preps
+          ls -lai
+          # make archlinux-preps
           echo "===================================================================================="
           SHELL
         end
@@ -81,6 +82,8 @@ Vagrant.configure(2) do |config|
             k8scluster.vm.box = "archlinux/archlinux"
             k8scluster.vm.hostname = "node-2"
             k8scluster.vm.network "private_network", ip: "192.168.50.12"
+            #Disabling the default /vagrant share can be done as follows:
+            k8scluster.vm.synced_folder ".", "/vagrant", disabled: true  # archlinux only
             k8scluster.vm.provider "virtualbox" do |vb|
                 vb.name = "node-2"
                 vb.memory = "2048"

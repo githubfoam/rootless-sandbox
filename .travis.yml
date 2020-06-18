@@ -309,9 +309,9 @@ fleet_script_tasks : &fleet_script_tasks
           - sudo vagrant ssh node-1 -c "sudo cp /vagrant/Makefile ."
           - sudo vagrant ssh node-1 -c "sudo cp -r /vagrant/scripts/ ."
           - sudo vagrant up --provider=libvirt node-2
-          - sudo vagrant ssh node-2 -c "sudo cp /vagrant/Makefile ."
-          - sudo vagrant ssh node-2 -c "sudo cp -r /vagrant/scripts/ ."
-          - sudo vagrant ssh node-2 -c "sudo make archlinux-preps"
+          # - sudo vagrant ssh node-2 -c "sudo cp /vagrant/Makefile ."
+          # - sudo vagrant ssh node-2 -c "sudo cp -r /vagrant/scripts/ ."
+          # - sudo vagrant ssh node-2 -c "sudo make archlinux-preps"
           # - sudo vagrant up --provider=libvirt
           - sudo vagrant status
           - sudo virsh list --all #show all running KVM/libvirt VMs
