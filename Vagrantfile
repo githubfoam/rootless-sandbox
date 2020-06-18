@@ -68,12 +68,17 @@ Vagrant.configure(2) do |config|
           echo "             (__)\       )\/\                                                      "
           echo "                 ||----w |                                                         "
           echo "                 ||     ||                                                         "
+          echo "===================================================================================="
+          cp /vagrant/Makefile .
+          cp -r /vagrant/scripts/ .
+          make archlinux-preps
+          echo "===================================================================================="
           SHELL
         end
 
 
         config.vm.define "node-2" do |k8scluster|
-            k8scluster.vm.box = "bento/ubuntu-20.04"
+            k8scluster.vm.box = "archlinux/archlinux"
             k8scluster.vm.hostname = "node-2"
             k8scluster.vm.network "private_network", ip: "192.168.50.12"
             k8scluster.vm.provider "virtualbox" do |vb|
