@@ -472,8 +472,12 @@ matrix:
       # <<: *fleet_script_libvirt_tasks
       script:
         - sudo docker build -t fabric2:bionic . --file Dockerfile.fabric2
-        - sudo docker build -t fabric2:alpine . --file Dockerfile.fabric2.alpine        
+        - sudo docker build -t fabric2:alpine . --file Dockerfile.fabric2.alpine
         - sudo docker image ls
+        # Run remote tasks with Fabric2
+        # - pip install -r requirements
+        - fab create-yaml
+        - fab main
       after_success:
         - deactivate
 

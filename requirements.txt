@@ -2,3 +2,4 @@
 testinfra
 pytest
 codecov
+fabric2
