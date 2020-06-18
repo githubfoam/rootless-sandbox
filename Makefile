@@ -1,6 +1,5 @@
 IMAGE := alpine/fio
-APP:="app/deploy-openesb.sh"
-
+APP:="scripts/usernetes-containerd.sh"
 usernetes-containerd:
 	bash scripts/usernetes-containerd.sh
 usernetes-crio:
