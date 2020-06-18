@@ -272,7 +272,39 @@ fleet_script_fakeroot_tasks : &fleet_script_fakeroot_tasks
         - sudo apt-get install -qqy fakeroot
 fleet_script_tasks : &fleet_script_tasks
       script:
-        - python --version
+          - python --version
+          - VAGRANT_VERSION="2.2.9"
+          - sudo apt-get -qq update
+          - sudo apt-get install -y cpu-checker bridge-utils dnsmasq-base ebtables libvirt-bin libvirt-dev qemu-kvm qemu-utils ruby-dev
+          - sudo systemctl status libvirtd
+          - sudo libvirtd --version
+          - egrep -c '(vmx|svm)' /proc/cpuinfo #If 0 it means that your CPU doesn't support hardware virtualization.If 1 or more it does - but you still need to make sure that virtualization is enabled in the BIOS.
+          - sudo addgroup libvirtd
+          - sudo adduser  $(id -un) libvirtd #ensure that your username is added to the group libvirtd
+          - sudo kvm-ok
+          - echo "============================================="
+          - echo "=============Installing Vagrant=============="
+          - sudo wget -nv https://releases.hashicorp.com/vagrant/${VAGRANT_VERSION}/vagrant_${VAGRANT_VERSION}_x86_64.deb
+          - sudo dpkg -i vagrant_${VAGRANT_VERSION}_x86_64.deb
+          - vagrant version
+          - echo "============================================="
+          - sudo vagrant plugin install vagrant-libvirt #The vagrant-libvirt plugin is required when using KVM on Linux
+          - sudo vagrant plugin install vagrant-mutate #Convert vagrant boxes to work with different providers
+          - sudo vagrant box add "bento/ubuntu-16.04" --provider=virtualbox
+          - sudo vagrant mutate "bento/ubuntu-16.04" libvirt
+          # - sudo vagrant box add "bento/ubuntu-19.04" --provider=virtualbox
+          # - sudo vagrant mutate "bento/ubuntu-19.04" libvirt
+          - sudo vagrant status
+          - sudo virsh list --all #show all running KVM/libvirt VMs
+          - vagrant box list #veridy installed boxes
+          - vagrant status #Check the status of the VMs to see that none of them have been created yet
+          - sudo vagrant up --provider=libvirt
+          - sudo vagrant status
+          - sudo vagrant ssh k8s-master -c "sudo cp /vagrant/Makefile ."
+          - sudo vagrant ssh k8s-master -c "sudo cp -r /vagrant/scripts/ ."
+          - sudo vagrant ssh k8s-master -c "sudo make usernetes-containerd"
+          - sudo vagrant destroy -f
+          - sudo virsh list --all #show all running KVM/libvirt VMs
 fleet_install_tasks : &fleet_install_tasks
       install:
         - pip install -r requirements.txt
@@ -405,9 +437,9 @@ matrix:
         - source ~venvpy3/bin/activate
       <<: *fleet_install_tasks
       <<: *fleet_script_tasks
-      # <<: *fleet_script_usernetes_containerd_tasks
-      script:
-        - sudo make usernetes-containerd    
+      # <<: *fleet_script_libvirt_tasks
+      # script:
+      #   - sudo make usernetes-containerd
       after_success:
         - deactivate
 
