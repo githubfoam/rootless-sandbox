@@ -7,7 +7,7 @@ usernetes-crio:
 archlinux-preps:
 	bash scripts/archlinux-req.sh
 deploy-vagrant:
-	bash scripts/archlinux-req.sh
+	bash scripts/deploy-vagrant.sh
 push-image:
 	docker push $(IMAGE)
 .PHONY: usernetes-containerd usernetes-crio push-image
