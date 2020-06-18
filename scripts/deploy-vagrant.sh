@@ -15,6 +15,7 @@ echo "=============================Install Vagrant==============================
 apt-get install -qqy unzip jq
 wget -nv https://releases.hashicorp.com/vagrant/${VAGRANT_CURRENT_VERSION}/vagrant_${VAGRANT_CURRENT_VERSION}_x86_64.deb
 dpkg -i vagrant_${VAGRANT_CURRENT_VERSION}_x86_64.deb
+# vagrant plugin problems w generic linux distribution,
 # wget -nv https://releases.hashicorp.com/vagrant/$VAGRANT_CURRENT_VERSION/vagrant_${VAGRANT_CURRENT_VERSION}_linux_amd64.zip
 # unzip "vagrant_${VAGRANT_CURRENT_VERSION}_linux_amd64.zip"
 # cp vagrant /usr/bin

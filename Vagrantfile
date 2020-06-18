@@ -23,7 +23,7 @@ Vagrant.configure(2) do |config|
         ansible.playbook = "provisioning/deploy.yml"
         ansible.become = true
         ansible.compatibility_mode = "2.0"
-        ansible.version = "2.9.9"
+        ansible.version = "2.9.10"
         ansible.extra_vars = {
                 node_ip: "192.168.50.10",
             }
