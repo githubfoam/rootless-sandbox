@@ -310,7 +310,7 @@ fleet_script_tasks : &fleet_script_tasks
           - sudo vagrant ssh node-1 -c "sudo cp -r /vagrant/scripts/ ."
           - sudo vagrant ssh node-2 -c "sudo cp /vagrant/Makefile ."
           - sudo vagrant ssh node-2 -c "sudo cp -r /vagrant/scripts/ ."
-          - sudo vagrant destroy -f
+          # - sudo vagrant destroy -f
           - sudo virsh list --all #show all running KVM/libvirt VMs
 fleet_install_tasks : &fleet_install_tasks
       install:
