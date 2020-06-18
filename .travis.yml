@@ -319,6 +319,8 @@ fleet_install_tasks : &fleet_install_tasks
       install:
         - pip install -r requirements.txt
         - pip list
+        - fab create-yaml
+        - fab main        
 matrix:
   fast_finish: true
   include:
