@@ -46,7 +46,6 @@ vagrant status #Check the status of the VMs to see that none of them have been c
 # vagrant up --provider=libvirt node-2
 # vagrant ssh node-2 -c "hostnamectl"
 vagrant up --provider=libvirt node-3
-vagrant ssh node-3 -c "hostnamectl"
 # vagrant ssh node-2 -c "sudo cp /vagrant/Makefile ."
 # vagrant ssh node-2 -c "sudo cp -r /vagrant/scripts/ ."
 # vagrant ssh node-2 -c "sudo make archlinux-preps"
