@@ -2,7 +2,8 @@
 set -eox pipefail #safety for script
 
 echo "=============================Install kvm qemu libvirt============================================================="
-export VAGRANT_CURRENT_VERSION="2.2.9"
+export VAGRANT_CURRENT_VERSION="$(curl -s https://checkpoint-api.hashicorp.com/v1/check/vagrant | jq -r -M '.current_version')"
+# export VAGRANT_CURRENT_VERSION="2.2.9"
 apt-get -qq update
 apt-get install -y cpu-checker bridge-utils dnsmasq-base ebtables libvirt-bin libvirt-dev qemu-kvm qemu-utils ruby-dev
 systemctl status libvirtd
@@ -15,10 +16,6 @@ echo "=============================Install Vagrant==============================
 apt-get install -qqy unzip jq
 wget -nv https://releases.hashicorp.com/vagrant/${VAGRANT_CURRENT_VERSION}/vagrant_${VAGRANT_CURRENT_VERSION}_x86_64.deb
 dpkg -i vagrant_${VAGRANT_CURRENT_VERSION}_x86_64.deb
-# vagrant plugin problems w generic linux distribution,
-# wget -nv https://releases.hashicorp.com/vagrant/$VAGRANT_CURRENT_VERSION/vagrant_${VAGRANT_CURRENT_VERSION}_linux_amd64.zip
-# unzip "vagrant_${VAGRANT_CURRENT_VERSION}_linux_amd64.zip"
-# cp vagrant /usr/bin
 vagrant version
 echo "=============================Install Vagrant============================================================="
 vagrant plugin install vagrant-libvirt #The vagrant-libvirt plugin is required when using KVM on Linux
