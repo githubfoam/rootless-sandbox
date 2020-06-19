@@ -69,9 +69,10 @@ Vagrant.configure(2) do |config|
           echo "                 ||----w |                                                         "
           echo "                 ||     ||                                                         "
           echo "===================================================================================="
+          dnf update && dnf install python3 -y
           python3 -V
-          # pip3 install ansible --user
-          # ansible --version
+          dnf install python3-pip
+          pip3 install ansible --user      
           dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm -y
           dnf install ansible -y
           ansible --version

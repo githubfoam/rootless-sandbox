@@ -20,13 +20,16 @@ vagrant version
 echo "=============================Install Vagrant============================================================="
 vagrant plugin install vagrant-libvirt #The vagrant-libvirt plugin is required when using KVM on Linux
 vagrant plugin install vagrant-mutate #Convert vagrant boxes to work with different providers
-vagrant box add "bento/ubuntu-19.10" --provider=virtualbox
-vagrant mutate "bento/ubuntu-19.10" libvirt
-vagrant box add "bento/ubuntu-20.04" --provider=virtualbox
-vagrant mutate "bento/ubuntu-20.04" libvirt
+# vagrant box add "bento/ubuntu-19.10" --provider=virtualbox
+# vagrant mutate "bento/ubuntu-19.10" libvirt
+# vagrant box add "bento/ubuntu-20.04" --provider=virtualbox
+# vagrant mutate "bento/ubuntu-20.04" libvirt
 #https://app.vagrantup.com/centos/boxes/8 by default libvirt support
 vagrant box add "centos/8" --provider=libvirt
-vagrant box add "archlinux/archlinux" --provider=libvirt
+#https://app.vagrantup.com/archlinux/boxes/archlinux
+# vagrant box add "archlinux/archlinux" --provider=libvirt
+vagrant box add "freebsd/FreeBSD-12.1-STABLE" --provider=virtualbox
+vagrant mutate "freebsd/FreeBSD-12.1-STABLE" libvirt
 vagrant status
 virsh list --all #show all running KVM/libvirt VMs
 vagrant box list #veridy installed boxes
