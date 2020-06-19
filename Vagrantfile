@@ -50,15 +50,17 @@ Vagrant.configure(2) do |config|
               vb.name = "node-1"
               vb.memory = "2048"
           end
-          # k8scluster.vm.provision "ansible_local" do |ansible|
-          #   ansible.become = true
-          #   ansible.compatibility_mode = "2.0"
-          #   ansible.version = "2.9.9"
-          #   ansible.extra_vars = {
-          #           node_ip: "192.168.50.11",
-          #       }
-          #   ansible.playbook = "provisioning/deploy.yml"
-          # end
+          # centos8 ansible_local problem fix
+          k8scluster.vm.provision :shell, path: "scripts/centos8.sh"
+          k8scluster.vm.provision "ansible_local" do |ansible|
+            ansible.become = true
+            ansible.compatibility_mode = "2.0"
+            ansible.version = "2.9.9"
+            ansible.extra_vars = {
+                    node_ip: "192.168.50.11",
+                }
+            ansible.playbook = "provisioning/deploy.yml"
+          end
           k8scluster.vm.provision "shell", inline: <<-SHELL
           echo "===================================================================================="
                                     hostnamectl status
@@ -68,18 +70,6 @@ Vagrant.configure(2) do |config|
           echo "             (__)\       )\/\                                                      "
           echo "                 ||----w |                                                         "
           echo "                 ||     ||                                                         "
-          echo "===================================================================================="
-          dnf update && dnf install python3 -y
-          python3 -V
-          dnf install python3-pip
-          pip3 install ansible --user      
-          dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm -y
-          dnf install ansible -y
-          ansible --version
-          # yum install ansible -y
-          cp /vagrant/Makefile .
-          cp -r /vagrant/scripts/ .
-          # make archlinux-preps
           echo "===================================================================================="
           SHELL
         end
