@@ -69,6 +69,7 @@ Vagrant.configure(2) do |config|
           echo "                 ||----w |                                                         "
           echo "                 ||     ||                                                         "
           echo "===================================================================================="
+          yum install ansible -y
           cp /vagrant/Makefile .
           cp -r /vagrant/scripts/ .
           ls -lai
@@ -98,6 +99,7 @@ Vagrant.configure(2) do |config|
             #       }
             #   ansible.playbook = "provisioning/deploy.yml"
             # end
+            k8scluster.vm.provision :shell, path: "scripts/archlinux-req.sh"
             k8scluster.vm.provision "shell", inline: <<-SHELL
             echo "===================================================================================="
                                       hostnamectl status
