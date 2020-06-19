@@ -108,7 +108,7 @@ Vagrant.configure(2) do |config|
         #   end
 
           config.vm.define "node-3" do |k8scluster|
-              k8scluster.vm.box = "freebsd/FreeBSD-12.1-STABLE"
+              k8scluster.vm.box = "bento/freebsd-12.1"
               k8scluster.vm.hostname = "node-3"
               k8scluster.vm.network "private_network", ip: "192.168.50.13"
               #Disabling the default /vagrant share can be done as follows:
@@ -140,4 +140,69 @@ Vagrant.configure(2) do |config|
               SHELL
             end
 
+            config.vm.define "node-4" do |k8scluster|
+                k8scluster.vm.box = "freebsd/FreeBSD-12.1-STABLE"
+                k8scluster.vm.hostname = "node-4"
+                k8scluster.vm.network "private_network", ip: "192.168.50.14"
+                #Disabling the default /vagrant share can be done as follows:
+                k8scluster.vm.synced_folder ".", "/vagrant", disabled: true  # archlinux only
+                k8scluster.vm.provider "virtualbox" do |vb|
+                    vb.name = "node-4"
+                    vb.memory = "2048"
+                end
+                # k8scluster.vm.provision "ansible_local" do |ansible|
+                #   # https://www.vagrantup.com/docs/provisioning/ansible_common.html Shared Ansible Options
+                #   ansible.become = true
+                #   ansible.compatibility_mode = "2.0"
+                #   ansible.version = "2.9.9"
+                #   ansible.extra_vars = {
+                #           node_ip: "192.168.50.12"
+                #       }
+                #   ansible.playbook = "provisioning/deploy.yml"
+                # end
+                k8scluster.vm.provision :shell, path: "scripts/freebsd.sh"
+                k8scluster.vm.provision "shell", inline: <<-SHELL
+                echo "===================================================================================="
+                echo $SHELL
+                echo "===================================================================================="
+                echo "         \   ^__^                                                                  "
+                echo "          \  (oo)\_______                                                          "
+                echo "             (__)\       )\/\                                                      "
+                echo "                 ||----w |                                                         "
+                echo "                 ||     ||                                                         "
+                SHELL
+              end
+
+              config.vm.define "node-5" do |k8scluster|
+                  k8scluster.vm.box = "bento/hardenedbsd-11"
+                  k8scluster.vm.hostname = "node-5"
+                  k8scluster.vm.network "private_network", ip: "192.168.50.15"
+                  #Disabling the default /vagrant share can be done as follows:
+                  k8scluster.vm.synced_folder ".", "/vagrant", disabled: true  # archlinux only
+                  k8scluster.vm.provider "virtualbox" do |vb|
+                      vb.name = "node-5"
+                      vb.memory = "2048"
+                  end
+                  # k8scluster.vm.provision "ansible_local" do |ansible|
+                  #   # https://www.vagrantup.com/docs/provisioning/ansible_common.html Shared Ansible Options
+                  #   ansible.become = true
+                  #   ansible.compatibility_mode = "2.0"
+                  #   ansible.version = "2.9.9"
+                  #   ansible.extra_vars = {
+                  #           node_ip: "192.168.50.12"
+                  #       }
+                  #   ansible.playbook = "provisioning/deploy.yml"
+                  # end
+                  # k8scluster.vm.provision :shell, path: "scripts/freebsd.sh"
+                  k8scluster.vm.provision "shell", inline: <<-SHELL
+                  echo "===================================================================================="
+                  echo $SHELL
+                  echo "===================================================================================="
+                  echo "         \   ^__^                                                                  "
+                  echo "          \  (oo)\_______                                                          "
+                  echo "             (__)\       )\/\                                                      "
+                  echo "                 ||----w |                                                         "
+                  echo "                 ||     ||                                                         "
+                  SHELL
+                end
 end

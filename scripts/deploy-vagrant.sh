@@ -30,6 +30,10 @@ vagrant box add "centos/7" --provider=libvirt
 # vagrant box add "archlinux/archlinux" --provider=libvirt
 vagrant box add "freebsd/FreeBSD-12.1-STABLE" --provider=virtualbox
 vagrant mutate "freebsd/FreeBSD-12.1-STABLE" libvirt
+vagrant box add "bento/hardenedbsd-11" --provider=virtualbox
+vagrant mutate "bento/hardenedbsd-11" libvirt
+vagrant box add "bento/freebsd-12.1" --provider=virtualbox
+vagrant mutate "bento/freebsd-12.1" libvirt
 vagrant status
 virsh list --all #show all running KVM/libvirt VMs
 vagrant box list #veridy installed boxes
@@ -46,6 +50,8 @@ vagrant status #Check the status of the VMs to see that none of them have been c
 # vagrant up --provider=libvirt node-2
 # vagrant ssh node-2 -c "hostnamectl"
 vagrant up --provider=libvirt node-3
+vagrant up --provider=libvirt node-4
+vagrant up --provider=libvirt node-5
 # vagrant ssh node-2 -c "sudo cp /vagrant/Makefile ."
 # vagrant ssh node-2 -c "sudo cp -r /vagrant/scripts/ ."
 # vagrant ssh node-2 -c "sudo make archlinux-preps"
