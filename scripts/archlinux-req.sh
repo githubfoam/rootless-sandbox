@@ -6,7 +6,7 @@ echo "=============================ansible =====================================
 pacman -Syu --noconfirm #Update and upgrade  all packages on the system
 pacman -Si ansible #Show extensive info about a package
 sudo pacman -Syu --noconfirm ansible #Install (and update package list)
-pacman -Ql ansible #List files installed by ansible package
+# pacman -Ql ansible #List files installed by ansible package
 ansible --version
 cat <<EOF | sudo tee ansible-local.yml
 ---
