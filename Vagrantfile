@@ -41,36 +41,36 @@ Vagrant.configure(2) do |config|
   #   end
 
 
-    config.vm.define "node-1" do |k8scluster|
-          k8scluster.vm.box = "centos/7"
-          # k8scluster.vm.box = "ubuntu/disco64 "
-          k8scluster.vm.hostname = "node-1"
-          k8scluster.vm.network "private_network", ip: "192.168.50.11"
-          k8scluster.vm.provider "virtualbox" do |vb|
-              vb.name = "node-1"
-              vb.memory = "2048"
-          end
-          k8scluster.vm.provision "ansible_local" do |ansible|
-            ansible.become = true
-            ansible.compatibility_mode = "2.0"
-            ansible.version = "2.9.9"
-            ansible.extra_vars = {
-                    node_ip: "192.168.50.11",
-                }
-            ansible.playbook = "provisioning/deploy.yml"
-          end
-          k8scluster.vm.provision "shell", inline: <<-SHELL
-          echo "===================================================================================="
-                                    hostnamectl status
-          echo "===================================================================================="
-          echo "         \   ^__^                                                                  "
-          echo "          \  (oo)\_______                                                          "
-          echo "             (__)\       )\/\                                                      "
-          echo "                 ||----w |                                                         "
-          echo "                 ||     ||                                                         "
-          echo "===================================================================================="
-          SHELL
-        end
+    # config.vm.define "node-1" do |k8scluster|
+    #       k8scluster.vm.box = "centos/7"
+    #       # k8scluster.vm.box = "ubuntu/disco64 "
+    #       k8scluster.vm.hostname = "node-1"
+    #       k8scluster.vm.network "private_network", ip: "192.168.50.11"
+    #       k8scluster.vm.provider "virtualbox" do |vb|
+    #           vb.name = "node-1"
+    #           vb.memory = "2048"
+    #       end
+    #       k8scluster.vm.provision "ansible_local" do |ansible|
+    #         ansible.become = true
+    #         ansible.compatibility_mode = "2.0"
+    #         ansible.version = "2.9.9"
+    #         ansible.extra_vars = {
+    #                 node_ip: "192.168.50.11",
+    #             }
+    #         ansible.playbook = "provisioning/deploy.yml"
+    #       end
+    #       k8scluster.vm.provision "shell", inline: <<-SHELL
+    #       echo "===================================================================================="
+    #                                 hostnamectl status
+    #       echo "===================================================================================="
+    #       echo "         \   ^__^                                                                  "
+    #       echo "          \  (oo)\_______                                                          "
+    #       echo "             (__)\       )\/\                                                      "
+    #       echo "                 ||----w |                                                         "
+    #       echo "                 ||     ||                                                         "
+    #       echo "===================================================================================="
+    #       SHELL
+    #     end
 
 
         # # synced_folder problem, ansible manually
@@ -127,17 +127,17 @@ Vagrant.configure(2) do |config|
               #       }
               #   ansible.playbook = "provisioning/deploy.yml"
               # end
-              k8scluster.vm.provision :shell, path: "scripts/freebsd.sh"
-              k8scluster.vm.provision "shell", inline: <<-SHELL
-              echo "===================================================================================="
-                                        hostnamectl status
-              echo "===================================================================================="
-              echo "         \   ^__^                                                                  "
-              echo "          \  (oo)\_______                                                          "
-              echo "             (__)\       )\/\                                                      "
-              echo "                 ||----w |                                                         "
-              echo "                 ||     ||                                                         "
-              SHELL
+              # k8scluster.vm.provision :shell, path: "scripts/freebsd.sh"
+              # k8scluster.vm.provision "shell", inline: <<-SHELL
+              # echo "===================================================================================="
+              #                           hostnamectl status
+              # echo "===================================================================================="
+              # echo "         \   ^__^                                                                  "
+              # echo "          \  (oo)\_______                                                          "
+              # echo "             (__)\       )\/\                                                      "
+              # echo "                 ||----w |                                                         "
+              # echo "                 ||     ||                                                         "
+              # SHELL
             end
 
 end
