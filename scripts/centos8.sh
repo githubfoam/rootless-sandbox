@@ -5,13 +5,13 @@ echo "=============================ansible =====================================
 echo "===================================================================================="
 # METHOD1
 dnf update && dnf install python3 -y
-# python3 -V
-dnf install python3-pip
+dnf install python3-pip -y
 pip3 install ansible --user
 dnf install ansible -y
 # METHOD2 Error: Unable to find a match
 # yum install  epel-release ansible -y
 ansible --version
+python3 -V
 # cp /vagrant/Makefile .
 # cp -r /vagrant/scripts/ .
 # ansible --version
