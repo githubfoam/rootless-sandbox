@@ -1,5 +1,5 @@
 ---
-sudo: required
+# sudo: required
 dist: bionic
 env:
   global:
@@ -272,8 +272,8 @@ fleet_script_fakeroot_tasks : &fleet_script_fakeroot_tasks
         - sudo apt-get install -qqy fakeroot
 fleet_script_tasks : &fleet_script_tasks
       script:
-        - sudo make deploy-vagrant
-        # - sudo make usernetes-containerd
+        - make deploy-vagrant
+        # - make usernetes-containerd
 
 fleet_install_tasks : &fleet_install_tasks
       install:
