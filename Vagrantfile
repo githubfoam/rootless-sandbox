@@ -50,8 +50,6 @@ Vagrant.configure(2) do |config|
               vb.name = "node-1"
               vb.memory = "2048"
           end
-          # centos8 ansible_local problem fix
-          k8scluster.vm.provision :shell, path: "scripts/centos8.sh"
           k8scluster.vm.provision "ansible_local" do |ansible|
             ansible.become = true
             ansible.compatibility_mode = "2.0"
