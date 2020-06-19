@@ -5,7 +5,7 @@ echo "=============================ansible =====================================
 echo "===================================================================================="
 # METHOD1
 dnf update && dnf install python3 -y
-python3 -V
+# python3 -V
 dnf install python3-pip
 pip3 install ansible --user
 dnf install ansible -y
