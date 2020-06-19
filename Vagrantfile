@@ -131,7 +131,6 @@ Vagrant.configure(2) do |config|
               k8scluster.vm.provision "shell", inline: <<-SHELL
               echo "===================================================================================="
               echo $SHELL
-                                        hostnamectl status
               echo "===================================================================================="
               echo "         \   ^__^                                                                  "
               echo "          \  (oo)\_______                                                          "

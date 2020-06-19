@@ -1,5 +1,6 @@
-#!/bin/bash
+#!/bin/sh
 set -eox pipefail #safety for script
+echo $SHELL # freebsd shell 
 
 echo "=============================ansible ============================================================="
 # make -C /usr/ports/sysutils/ansible install # install from ports
