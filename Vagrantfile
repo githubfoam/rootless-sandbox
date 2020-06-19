@@ -107,16 +107,17 @@ Vagrant.configure(2) do |config|
         #     SHELL
         #   end
 
-          config.vm.define "node-3" do |k8scluster|
-              k8scluster.vm.box = "bento/freebsd-12.1"
-              k8scluster.vm.hostname = "node-3"
-              k8scluster.vm.network "private_network", ip: "192.168.50.13"
-              #Disabling the default /vagrant share can be done as follows:
-              k8scluster.vm.synced_folder ".", "/vagrant", disabled: true  # archlinux only
-              k8scluster.vm.provider "virtualbox" do |vb|
-                  vb.name = "node-3"
-                  vb.memory = "2048"
-              end
+        # The configured shell (config.ssh.shell) is invalid and unable
+          # config.vm.define "node-3" do |k8scluster|
+          #     k8scluster.vm.box = "bento/freebsd-12.1"
+          #     k8scluster.vm.hostname = "node-3"
+          #     k8scluster.vm.network "private_network", ip: "192.168.50.13"
+          #     #Disabling the default /vagrant share can be done as follows:
+          #     k8scluster.vm.synced_folder ".", "/vagrant", disabled: true  # archlinux only
+          #     k8scluster.vm.provider "virtualbox" do |vb|
+          #         vb.name = "node-3"
+          #         vb.memory = "2048"
+          #     end
               # k8scluster.vm.provision "ansible_local" do |ansible|
               #   # https://www.vagrantup.com/docs/provisioning/ansible_common.html Shared Ansible Options
               #   ansible.become = true
