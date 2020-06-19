@@ -42,7 +42,7 @@ Vagrant.configure(2) do |config|
 
 
     config.vm.define "node-1" do |k8scluster|
-          k8scluster.vm.box = "centos/8"
+          k8scluster.vm.box = "centos/7"
           # k8scluster.vm.box = "ubuntu/disco64 "
           k8scluster.vm.hostname = "node-1"
           k8scluster.vm.network "private_network", ip: "192.168.50.11"

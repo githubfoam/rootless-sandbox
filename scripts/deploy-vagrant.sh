@@ -24,8 +24,8 @@ vagrant plugin install vagrant-mutate #Convert vagrant boxes to work with differ
 # vagrant mutate "bento/ubuntu-19.10" libvirt
 # vagrant box add "bento/ubuntu-20.04" --provider=virtualbox
 # vagrant mutate "bento/ubuntu-20.04" libvirt
-#https://app.vagrantup.com/centos/boxes/8 by default libvirt support
-vagrant box add "centos/8" --provider=libvirt
+#https://app.vagrantup.com/centos/boxes/7 by default libvirt support
+vagrant box add "centos/7" --provider=libvirt
 #https://app.vagrantup.com/archlinux/boxes/archlinux
 # vagrant box add "archlinux/archlinux" --provider=libvirt
 vagrant box add "freebsd/FreeBSD-12.1-STABLE" --provider=virtualbox
