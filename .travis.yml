@@ -272,7 +272,7 @@ fleet_script_fakeroot_tasks : &fleet_script_fakeroot_tasks
         - sudo apt-get install -qqy fakeroot
 fleet_script_tasks : &fleet_script_tasks
       script:
-        - make deploy-vagrant
+        - sudo make deploy-vagrant
         # - make usernetes-containerd
 
 fleet_install_tasks : &fleet_install_tasks
