@@ -128,16 +128,16 @@ Vagrant.configure(2) do |config|
               #   ansible.playbook = "provisioning/deploy.yml"
               # end
               # k8scluster.vm.provision :shell, path: "scripts/freebsd.sh"
-              k8scluster.vm.provision "shell", inline: <<-SHELL
-              echo "===================================================================================="
-              echo $SHELL
-              echo "===================================================================================="
-              echo "         \   ^__^                                                                  "
-              echo "          \  (oo)\_______                                                          "
-              echo "             (__)\       )\/\                                                      "
-              echo "                 ||----w |                                                         "
-              echo "                 ||     ||                                                         "
-              SHELL
+              # k8scluster.vm.provision "shell", inline: <<-SHELL
+              # echo "===================================================================================="
+              # echo $SHELL
+              # echo "===================================================================================="
+              # echo "         \   ^__^                                                                  "
+              # echo "          \  (oo)\_______                                                          "
+              # echo "             (__)\       )\/\                                                      "
+              # echo "                 ||----w |                                                         "
+              # echo "                 ||     ||                                                         "
+              # SHELL
             end
 
             config.vm.define "node-4" do |k8scluster|
@@ -193,7 +193,7 @@ Vagrant.configure(2) do |config|
                   #       }
                   #   ansible.playbook = "provisioning/deploy.yml"
                   # end
-                  # k8scluster.vm.provision :shell, path: "scripts/freebsd.sh"
+                  k8scluster.vm.provision :shell, path: "scripts/freebsd.sh"
                   k8scluster.vm.provision "shell", inline: <<-SHELL
                   echo "===================================================================================="
                   echo $SHELL
