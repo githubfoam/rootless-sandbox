@@ -141,9 +141,9 @@ Vagrant.configure(2) do |config|
           #     SHELL
           #   end
 
-            config.vm.define "node-4" do |k8scluster|
+            config.vm.define "vgnode04" do |k8scluster|
                 k8scluster.vm.box = "freebsd/FreeBSD-12.1-STABLE"
-                k8scluster.vm.hostname = "node-4"
+                k8scluster.vm.hostname = "vgnode04"
                 k8scluster.vm.network "private_network", ip: "192.168.50.14"
                 #Disabling the default /vagrant share can be done as follows:
                 k8scluster.vm.synced_folder ".", "/vagrant", disabled: true  # archlinux only
@@ -154,28 +154,28 @@ Vagrant.configure(2) do |config|
                 k8scluster.vm.provision :shell, path: "scripts/freebsd.sh"
               end
 
-              config.vm.define "node-5" do |k8scluster|
+              config.vm.define "vgnode05" do |k8scluster|
                   # k8scluster.vm.box = "bento/hardenedbsd-11"
                   k8scluster.vm.box = "archlinux/archlinux"
-                  k8scluster.vm.hostname = "node-5"
+                  k8scluster.vm.hostname = "vgnode05"
                   k8scluster.vm.network "private_network", ip: "192.168.50.15"
                   #Disabling the default /vagrant share can be done as follows:
                   k8scluster.vm.synced_folder ".", "/vagrant", disabled: true  # archlinux only
                   k8scluster.vm.provider "virtualbox" do |vb|
-                      vb.name = "node-5"
+                      vb.name = "vboxnode05"
                       vb.memory = "2048"
                   end
                   k8scluster.vm.provision :shell, path: "scripts/archlinux.sh"
                 end
 
-                config.vm.define "node-6" do |k8scluster|
+                config.vm.define "vgnode06" do |k8scluster|
                     k8scluster.vm.box =  "opensuse/Tumbleweed.x86_64"
-                    k8scluster.vm.hostname = "node-6"
+                    k8scluster.vm.hostname = "vgnode06"
                     k8scluster.vm.network "private_network", ip: "192.168.50.16"
                     #Disabling the default /vagrant share can be done as follows:
                     k8scluster.vm.synced_folder ".", "/vagrant", disabled: true  # archlinux only
                     k8scluster.vm.provider "virtualbox" do |vb|
-                        vb.name = "node-6"
+                        vb.name = "vboxnode06"
                         vb.memory = "2048"
                     end
                     k8scluster.vm.provision :shell, path: "scripts/opensuseTumbleweed.sh"
