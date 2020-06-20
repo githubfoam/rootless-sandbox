@@ -49,7 +49,7 @@ vagrant status #Check the status of the VMs to see that none of them have been c
 # vagrant ssh node-1 -c "sudo cp -r /vagrant/scripts/ ."
 # vagrant up --provider=libvirt node-2
 # vagrant ssh node-2 -c "hostnamectl"
-vagrant up --provider=libvirt node-3
+# vagrant up --provider=libvirt node-3
 vagrant up --provider=libvirt node-4
 vagrant up --provider=libvirt node-5
 # vagrant ssh node-2 -c "sudo cp /vagrant/Makefile ."
