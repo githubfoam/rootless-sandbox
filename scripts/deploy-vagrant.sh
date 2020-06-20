@@ -45,13 +45,13 @@ vagrant plugin install vagrant-mutate #Convert vagrant boxes to work with differ
 # https://app.vagrantup.com/freebsd/boxes/FreeBSD-12.1-RELEASE
 vagrant box add "freebsd/FreeBSD-12.1-STABLE" --provider=virtualbox
 vagrant mutate "freebsd/FreeBSD-12.1-STABLE" libvirt
-vagrant up --provider=libvirt node-4
+vagrant up --provider=libvirt vgnode04
 #https://app.vagrantup.com/archlinux/boxes/archlinux
 vagrant box add "archlinux/archlinux" --provider=libvirt
-vagrant up --provider=libvirt node-5
+vagrant up --provider=libvirt vgnode05
 # https://app.vagrantup.com/opensuse/boxes/Tumbleweed.x86_64
 vagrant box add "archlinux/archlinux" --provider=libvirt
-vagrant up --provider=libvirt node-6
+vagrant up --provider=libvirt vgnode06
 # vagrant box add "bento/hardenedbsd-11" --provider=virtualbox
 # vagrant mutate "bento/hardenedbsd-11" libvirt
 # vagrant box add "bento/freebsd-12.1" --provider=virtualbox
