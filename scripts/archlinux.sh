@@ -1,6 +1,15 @@
 #!/bin/bash
 set -eox pipefail #safety for script
 
+echo "===================================================================================="
+hostnamectl
+echo "===================================================================================="
+echo "         \   ^__^                                                                  "
+echo "          \  (oo)\_______                                                          "
+echo "             (__)\       )\/\                                                      "
+echo "                 ||----w |                                                         "
+echo "                 ||     ||                                                         "
+
 echo "=============================ansible ============================================================="
 # https://github.com/rootless-containers/usernetes
 pacman -Syu --noconfirm #Update and upgrade  all packages on the system
