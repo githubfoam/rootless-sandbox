@@ -49,6 +49,9 @@ vagrant up --provider=libvirt node-4
 #https://app.vagrantup.com/archlinux/boxes/archlinux
 vagrant box add "archlinux/archlinux" --provider=libvirt
 vagrant up --provider=libvirt node-5
+# https://app.vagrantup.com/opensuse/boxes/Tumbleweed.x86_64
+vagrant box add "archlinux/archlinux" --provider=libvirt
+vagrant up --provider=libvirt node-6
 # vagrant box add "bento/hardenedbsd-11" --provider=virtualbox
 # vagrant mutate "bento/hardenedbsd-11" libvirt
 # vagrant box add "bento/freebsd-12.1" --provider=virtualbox

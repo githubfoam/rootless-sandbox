@@ -167,6 +167,7 @@ Vagrant.configure(2) do |config|
                   end
                   k8scluster.vm.provision :shell, path: "scripts/archlinux.sh"
                 end
+
                 config.vm.define "node-6" do |k8scluster|
                     k8scluster.vm.box =  "opensuse/Tumbleweed.x86_64"
                     k8scluster.vm.hostname = "node-6"
