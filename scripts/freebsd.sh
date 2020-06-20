@@ -10,14 +10,12 @@ echo "          \  (oo)\_______                                                 
 echo "             (__)\       )\/\                                                      "
 echo "                 ||----w |                                                         "
 echo "                 ||     ||                                                         "
-
 echo "=============================ansible ============================================================="
 # make -C /usr/ports/sysutils/ansible install # install from ports
 # pkg install py27-ansible #Python 2 version
 pkg install sudo #If the sudo command not foun
 type sudo #must have sudo installed
 #Allow members of group wheel to execute any command
-stat /usr/local/etc/sudoers.d/allow-wheel-user-login
 echo '%wheel ALL=(ALL) ALL' | sudo tee /usr/local/etc/sudoers.d/allow-wheel-user-login
 cat /usr/local/etc/sudoers.d/allow-wheel-user-login
 
